@@ -37,13 +37,16 @@ volatile bool waitForStop = false;
 //---------------------------------------------------------------------------------------------
 // Global definitions for the GPS driver
 //---------------------------------------------------------------------------------------------
-const char GPRMC[] = "$GPRMC,ttttt.tt,f,llll.lllll,N,wwwww.wwwww,W,?.390,,200517,,,A*6F";
-volatile bool hasFix = false;
-volatile uint8_t parsePos = 0;
-long lat, lon;
-unsigned long time1, date, fix_age;
-TinyGPS gpsParser;
-volatile unsigned int numMsgs = 0;
+volatile bool hasFix = false; 
+volatile uint8_t parsePos = 0; 
+long lat, lon; 
+unsigned long time1, date, fix_age; 
+TinyGPS gpsParser; 
+volatile unsigned int numMsgs = 0; 
+volatile unsigned int numGPRMC_Msgs = 0; 
+const char GPRMC_keyword[] = "GPRMC,,,,,,,,,,,";
+enum GPS_State {SEARCHING, KEYWORD,TIME,VALIDITY,LAT,NS,LONG,EW,SPEED,COURSE,STAMP,VAR,EW2,CHECKSUM};
+GPS_State gpsState = SEARCHING;
 
 //---------------------------------------------------------------------------------------------
 // Global definitions for the driver
@@ -51,7 +54,7 @@ volatile unsigned int numMsgs = 0;
 long GetLat() {return lat;}
 long GetLong() {return lon; }
 unsigned long GetTime() {return time1;}
-bool GetGPSStatus() { return hasFix; }
+bool GPS_getStatus() { return hasFix; }
 
 //---------------------------------------------------------------------------------------------
 // Takes the currently received character and sends it to the GPS Parser (TinyGPS)
@@ -87,16 +90,68 @@ ISR(TIMER0_COMPA_vect)
 {		
 	if( waitForStop )
 	{		
-		if( --sampleNum == 0 )
+		if( --sampleNum == 0 ) // If sampleNum is zero, that means we have read in a new byte (char)
 		{
+			
+			// UART State variables 
 			waitForStop = false;
 			waitForStart = true;
-			softUARTBuffer[bufferIndex] = workingChar;
+			
+			// GPS Parsing Section
 			if(workingChar == '$')
 			{
 				numMsgs +=1;
+				parsePos = 0;
+				gpsState = KEYWORD;
 			}
-			ParseGPS(workingChar);
+			else if (gpsState != SEARCHING)
+			{
+				switch( gpsState ) // This means we are in the "GPRMC part"
+				{
+					case KEYWORD:
+						if(GPRMC_keyword[parsePos] == workingChar)
+						{
+							parsePos++;
+							if(parsePos == 6) // We have received a "GPRMC,"
+							{
+								parsePos = 0;
+								gpsState = TIME;
+								numGPRMC_Msgs++;
+							}
+						}
+						break;
+						
+					case TIME:
+						if(workingChar==',')
+						{
+							gpsState = VALIDITY;
+						}
+						break;
+						
+					case VALIDITY:
+						if(workingChar == ',')
+						{
+							gpsState = SEARCHING;
+						}
+						else if (workingChar =='V')
+						{
+							hasFix = false;
+						}
+						else if (workingChar == 'A')
+						{
+							hasFix = true;
+						}
+						break;					
+						
+					default:
+						break;
+				}
+			}
+				
+			//ParseGPS(workingChar);
+			
+			// Internal software UART buffer section 
+			softUARTBuffer[bufferIndex] = workingChar;
 			bufferIndex += 1;
 			if( bufferIndex == MAX_UART_BUFFER_SIZE )
 			{
@@ -174,6 +229,8 @@ bool InitSoftUART()
 	// Setup gps info
 	hasFix = false;
 	parsePos = 0;
+	numMsgs = 0;
+	numGPRMC_Msgs = 0;
 	
 	// Reset Timer0 to put us half a bit in.
 	TCCR0A |= (1<<WGM01); // CTC mode
@@ -199,4 +256,9 @@ bool HaveFix()
 unsigned int GPS_getNumMSG()
 {
 	return numMsgs;
+}
+
+unsigned int GPS_getNumRMC_Msg()
+{
+	return numGPRMC_Msgs;
 }

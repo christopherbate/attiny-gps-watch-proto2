@@ -27,8 +27,7 @@ void ResetBufferState();
 unsigned int GetBufferLength();
 unsigned int GetBufferIndex();
 char *GetBufferPointer();
-bool BufferHasData();
-bool HaveFix();
+
 
 //---------------------------------------------------------------------------------------------
 // Function Prototypes - GPS Access
@@ -36,8 +35,8 @@ bool HaveFix();
 long GetLat();
 long GetLong();
 unsigned long GetTime();
-bool GetGPSStatus();
+bool GPS_getStatus();
 unsigned int GPS_getNumMSG();
-
+unsigned int GPS_getNumRMC_Msg();
 
 #endif /* SOFTUART_H_ */

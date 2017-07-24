@@ -81,19 +81,22 @@ int main(void)
 			WriteText(WatchClock_GetTimeString(),0);
 			sprintf(longbuff,"Num msgs recv'd:%d",GPS_getNumMSG());
 			WriteText(longbuff,1);
-			if( GetGPSStatus() )
+			if( GPS_getStatus() )
 			{
 				sprintf(longbuff,"Status: Fixed");
 				WriteText(longbuff,2);
 			}
 			else
 			{
-				WriteText("Status: No Fix",2);
+				sprintf(longbuff,"Status: Not Fixed");
+				WriteText(longbuff,2);
 			}
 			sprintf(longbuff,"Lat:");
 			WriteText(longbuff,3);
 			sprintf(longbuff,"Long:");
 			WriteText(longbuff,4);
+			sprintf(longbuff,"Num GPRMC recv'd:%d",GPS_getNumRMC_Msg());
+			WriteText(longbuff,5);
 		
 			lastTime = currTime; 
 		}
