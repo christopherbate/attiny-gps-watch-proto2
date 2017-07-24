@@ -2,7 +2,12 @@
 // SSD1306Driver.h
 //
 // Created: 5/11/2017 9:09:43 AM
-// Author : Christopher Bate
+// Credit: This driver was informed by various open source drivers floating around the Internet, including
+// the Tinysaur SSD1306xLED driver and the Adafruit SSD1306 library. 
+// Working with the SSD1306 Taiwanese factor manuals floating around and the above libraries, I created this
+// minimal driver for driving the display with text in this project.
+//
+// Note that this driver initializes the display in page-addressing mode (see SSD1306 manual). 
 //
 // Provides all necessary variables and functions necessary to initialize, clear, and draw text
 // to the SSD1306 driver.
@@ -10,8 +15,6 @@
 // Initialization Requirements: Define "SSD1306_128X32_MODE" for 128x32. Otherwise 128x64 is assumed.
 //								Must call "SSD1306_Init" or all of the other functions will just return.
 //---------------------------------------------------------------------------------------------
-
-
 #ifndef SSD1306DRIVER_H_
 #define SSD1306DRIVER_H_
 
@@ -60,7 +63,6 @@
 #define SSD1306_SETCOL_STARTEND 0x21 
 #define SSD1306_SETPAGE_STARTEND 0x22 
 
-// some comment
 
 // Display boundary constants
 #define SSD1306_LAST_COL 0x7F // 127
@@ -77,15 +79,25 @@
 #define DCMD 0x40
 #define CCMD 0x00
 
-// Function Prototypes
-bool InitSSD1306();
+//---------------------------------------------------------------------------------------------
+// API - Initialization
+//---------------------------------------------------------------------------------------------
+bool SSD1306_Init();
+
+//---------------------------------------------------------------------------------------------
+// API - Command wrappers
+// These should probably be "private"
+//---------------------------------------------------------------------------------------------
 void ScreenCMD( unsigned char msg );
 void ScreenData( unsigned char msg );
+
+//---------------------------------------------------------------------------------------------
+// API - Screen Function
+// These should be "public"
+//---------------------------------------------------------------------------------------------
 void ScreenClear();
-void ClearBuffer();
-void PresentBuffer();
 void WriteText( const char msg[], uint8_t line );
-void WriteMultiLine( const char msg[] );
+//void WriteMultiLine( const char msg[] );
 void SetPageAddress(  uint8_t offset );
 void SetColAddress( uint8_t offset );
 

@@ -37,6 +37,7 @@ long GetLat();
 long GetLong();
 unsigned long GetTime();
 bool GetGPSStatus();
+unsigned int GPS_getNumMSG();
 
 
 #endif /* SOFTUART_H_ */

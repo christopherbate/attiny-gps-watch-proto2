@@ -35,7 +35,7 @@ volatile bool waitForStop = false;
 
 
 //---------------------------------------------------------------------------------------------
-// Global definitions for the driver
+// Global definitions for the GPS driver
 //---------------------------------------------------------------------------------------------
 const char GPRMC[] = "$GPRMC,ttttt.tt,f,llll.lllll,N,wwwww.wwwww,W,?.390,,200517,,,A*6F";
 volatile bool hasFix = false;
@@ -43,6 +43,7 @@ volatile uint8_t parsePos = 0;
 long lat, lon;
 unsigned long time1, date, fix_age;
 TinyGPS gpsParser;
+volatile unsigned int numMsgs = 0;
 
 //---------------------------------------------------------------------------------------------
 // Global definitions for the driver
@@ -77,7 +78,7 @@ void ParseGPS( char current )
 
 //---------------------------------------------------------------------------------------------
 // Interrupt Routine for the Timer 0 Compare Match A
-// Iterrupts at 3x Baud rate of 9600. 
+// Interrupts at 3x Baud rate of 9600. 
 // Actually does the work of receiving the bits on the RX pin, putting hte bit in the currect position for the current byte.
 // and then sending the completed byte to the GPS Parser
 // Requirements: none 
@@ -91,6 +92,10 @@ ISR(TIMER0_COMPA_vect)
 			waitForStop = false;
 			waitForStart = true;
 			softUARTBuffer[bufferIndex] = workingChar;
+			if(workingChar == '$')
+			{
+				numMsgs +=1;
+			}
 			ParseGPS(workingChar);
 			bufferIndex += 1;
 			if( bufferIndex == MAX_UART_BUFFER_SIZE )
@@ -108,7 +113,7 @@ ISR(TIMER0_COMPA_vect)
 			{
 				waitForStart = false;
 				workingChar = 0;
-				sampleNum = 4;
+				sampleNum = 4; // We initially wait 4x ticks before sampling, for all other bits we wait 3x ticks
 				currPassNum = 0;
 				softUARTBuffer[bufferIndex] = 0;
 				workingCharMask = 1;
@@ -135,7 +140,7 @@ ISR(TIMER0_COMPA_vect)
 				currPassNum += 1;
 				if(currPassNum == 8)
 				{
-					// We will be on the stop bit next so increment everything.
+					// We will be on the stop bit next 
 					waitForStop = true;
 				}
 			}
@@ -170,10 +175,6 @@ bool InitSoftUART()
 	hasFix = false;
 	parsePos = 0;
 	
-	// Set up GIMSK to receive external interrupts on pin change
-	// GIMSK |= (1<<PCIE);
-	// PCMSK |= (1<<UART_PIN);
-	
 	// Reset Timer0 to put us half a bit in.
 	TCCR0A |= (1<<WGM01); // CTC mode
 	TCCR0B |= (1<<CS01); // Over 8 pre-scale 
@@ -193,4 +194,9 @@ char *GetBufferPointer()
 bool HaveFix()
 {
 	return hasFix;
+}
+
+unsigned int GPS_getNumMSG()
+{
+	return numMsgs;
 }

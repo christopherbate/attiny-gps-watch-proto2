@@ -181,10 +181,10 @@
     <Compile Include="TinyGPS.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="TWI.cpp">
+    <Compile Include="IIC_Interface.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="TWI.h">
+    <Compile Include="IIC_Interface.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="WatchClock.cpp">
