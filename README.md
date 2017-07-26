@@ -6,13 +6,16 @@ Finalizing code for upload
 
 Current features:
 - Software Serial interface UART (used for RX of GPS signal)
-- USI and Timer used for I2C interface with SSD1306 Display 
-- Software Serial output interface UART for sending debug text out to Arduino
+- USI and Timer used for I2C interface 
+- SSD1306 Driver 
+- Software serial output for debugging purposes
+- Simple finite-state machine for procesing NMEA messages
+- Basic clock utilizing timer to keep track of time to millisecond
 
 ToDo:
-- Processing NMEA messages 
+- Finish NMEA processing for lat/long/direction information 
 - Code profiling 
-- Final interface integration and design 
+- Syncing watch clock with GPS time 
 
 # About this project
 Nowadays, we are spoiled with the availability of fast processors with ample memory, storage, and peripheral features. The purpose of this project is to design a workable hand-portable GPS solution using a minimal microcontroller that consumes a very low amount of power. Like many people, my first experience with microcontrollers was with the very friendly Arduino platform. I can't remember when, but I eventually stumbled upon the ATTiny series, which are propular amongst hobbyists for their low price and relative simplicity. The ATTiny85 comes in a 8-pin DIP package, and 3 pins are taken up by VCC, GND, and RESET, 2 for external clock source, leaving 3 pins to control and receive signals. I like this device because it challenges you to implement your requirements using a bare minimal amount of features present on a microcontroller today. Most basic projects don't necessarily need the power of chips present in most Arduinos, let alone an ARM processor. There aren't even any dedicated UART or SPI peripherals on the ATTiny85, only a "Universal Serial Interface" or USI. A lot of thinking for beginning microcontorller programmers and software workarounds will be necessary to interface with multiple sensors and outputs. 
