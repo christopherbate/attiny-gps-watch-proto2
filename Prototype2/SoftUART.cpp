@@ -14,7 +14,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "DebugSerial.h"
-#include "TinyGPS.h"
 
 //---------------------------------------------------------------------------------------------
 // Global definitions for the driver
@@ -41,7 +40,6 @@ volatile bool hasFix = false;
 volatile uint8_t parsePos = 0; 
 long lat, lon; 
 unsigned long time1, date, fix_age; 
-TinyGPS gpsParser; 
 volatile unsigned int numMsgs = 0; 
 volatile unsigned int numGPRMC_Msgs = 0; 
 const char GPRMC_keyword[] = "GPRMC,,,,,,,,,,,";
@@ -71,12 +69,7 @@ void ParseGPS( char current )
 	{
 			
 	}*/
-	if( gpsParser.encode(current) )
-	{
-		gpsParser.get_position(&lat, &lon, &fix_age);
-		gpsParser.get_datetime(&date,&time1,&fix_age);
-		hasFix = true;
-	}
+	
 }
 
 //---------------------------------------------------------------------------------------------
@@ -151,9 +144,7 @@ ISR(TIMER0_COMPA_vect)
 						break;
 				}
 			}
-				
-			//ParseGPS(workingChar);
-			
+							
 			// Internal software UART buffer section 
 			softUARTBuffer[bufferIndex] = workingChar;
 			bufferIndex += 1;

@@ -175,12 +175,6 @@
     <Compile Include="SSD1306Driver.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="TinyGPS.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="TinyGPS.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="IIC_Interface.cpp">
       <SubType>compile</SubType>
     </Compile>
