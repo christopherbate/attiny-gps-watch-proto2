@@ -112,12 +112,16 @@ ISR(TIMER0_COMPA_vect)
 						if(GPRMC_keyword[parsePos] == workingChar)
 						{
 							parsePos++;
-							if(parsePos == 6) // We have received a "GPRMC,"
+							if(workingChar==',') // We have received a "GPRMC,"
 							{
 								parsePos = 0;
 								gpsState = TIME;
 								numGPRMC_Msgs++;
 							}
+						}
+						else
+						{
+							gpsState = SEARCHING;
 						}
 						break;
 						
