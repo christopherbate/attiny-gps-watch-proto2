@@ -44,7 +44,7 @@ volatile unsigned int numMsgs = 0;
 volatile unsigned int numGPRMC_Msgs = 0; 
 const char GPRMC_keyword[] = "GPRMC,,,,,,,,,,,";
 enum GPS_State {SEARCHING, KEYWORD,TIME,VALIDITY,LAT,NS,LONG,EW,SPEED,COURSE,STAMP,VAR,EW2,CHECKSUM};
-GPS_State gpsState = SEARCHING;
+volatile GPS_State gpsState = SEARCHING;
 
 //---------------------------------------------------------------------------------------------
 // Global definitions for the driver
@@ -138,12 +138,33 @@ ISR(TIMER0_COMPA_vect)
 						{
 							hasFix = true;
 						}
-						break;					
+						break;			
+						
+					case LAT:
+						break;
+						
+					case NS:
+						break;
+						
+					case LONG:
+						break;
+						
+					case EW:
+						break;
+						
+					case SPEED:
+						break;
+						
+					case COURSE:
+						break;
+							
 						
 					default:
 						break;
 				}
 			}
+			// enum GPS_State {SEARCHING, KEYWORD,TIME,VALIDITY,LAT,NS,LONG,EW,SPEED,COURSE,STAMP,VAR,EW2,CHECKSUM};
+
 							
 			// Internal software UART buffer section 
 			softUARTBuffer[bufferIndex] = workingChar;
