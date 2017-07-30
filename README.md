@@ -1,9 +1,7 @@
 # attiny-gps-watch
 Schematics, code, and notes for a GPS watch based on ATMEL AVR ATTiny85 Micro-controller 
 
-# Status - WIP
-Finalizing code for upload
-
+# Status - Finalizing GPS parsing, then will move onto product housing and power management
 Current features:
 - Software Serial interface UART (used for RX of GPS signal)
 - USI and Timer used for I2C interface 
